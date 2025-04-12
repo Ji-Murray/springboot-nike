@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/nike?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf-8&allowPublicKeyRetrieval=true
+    username: root
+    password: 123456   # IDEA内置MySQL默认密码
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+
+
+  devtools:
+    restart:
+      enabled: true # 配置热部署
+      additional-paths: src/main/java
+      exclude: WEB-INF/**
+
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: jzh.entity

@@ -1,0 +1,15 @@
+.recommand{
+    text-align: center;
+}
+
+.card1 {
+    margin: 50px 70px;
+}
+.card1 img{
+    height: 600px;
+}
+.block{
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
