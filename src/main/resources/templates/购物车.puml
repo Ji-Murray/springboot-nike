@@ -1,0 +1,17 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+
+
+               A[用户界面层 UI] --> B[业务逻辑层 Service]
+               B --> C[数据访问层 DAO]
+               C --> D[数据库 Database]
+               A --> E[第三方API]
+               style A fill:#f9f,stroke:#333
+               style B fill:#bbf,stroke:#333
+               style C fill:#9f9,stroke:#333
+               style D fill:#f96,stroke:#333
+               style E fill:#69f,stroke:#333
+@enduml
