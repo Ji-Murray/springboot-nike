@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 48px 0 0;
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+            width: 200px;
+        }
+        .content {
+            margin-left: 200px;
+            padding: 20px;
+        }
+        .stat-card {
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">管理后台</a>
+            <a href="/admin/logout" class="btn btn-outline-light">退出</a>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block sidebar">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/admin/dashboard">首页</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/products">商品管理</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/orders">订单管理</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/users">用户管理</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <main class="content">
+                <h2>数据概览</h2>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <h5>商品总数</h5>
+                            <h3 th:text="${productCount}">0</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <h5>订单总数</h5>
+                            <h3 th:text="${orderCount}">0</h3>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card">
+                            <h5>用户总数</h5>
+                            <h3 th:text="${userCount}">0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">最近订单</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>订单号</th>
+                                            <th>用户</th>
+                                            <th>金额</th>
+                                            <th>状态</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="order : ${recentOrders}">
+                                            <td th:text="${order.id}"></td>
+                                            <td th:text="${order.user.username}"></td>
+                                            <td th:text="${order.totalAmount}"></td>
+                                            <td th:text="${order.status}"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">热门商品</h5>
+                            </div>
+                            <div class="card-body">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>商品名</th>
+                                            <th>价格</th>
+                                            <th>库存</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="product : ${hotProducts}">
+                                            <td th:text="${product.name}"></td>
+                                            <td th:text="${product.price}"></td>
+                                            <td th:text="${product.stock}"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 

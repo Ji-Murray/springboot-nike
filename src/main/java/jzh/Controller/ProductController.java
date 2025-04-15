@@ -64,6 +64,23 @@ public class ProductController {
         return "new";
     }
 
+    @GetMapping("/search")
+    public String searchProducts(@RequestParam String keyword, Model model) {
+        List<Product> products = productService.searchProducts(keyword);
+        model.addAttribute("products", products);
+        model.addAttribute("keyword", keyword);
+        
+        // 添加分类数量统计
+        Map<String, Integer> categoryCounts = new HashMap<>();
+        categoryCounts.put("新品", productService.getProductCountByCategory("新品"));
+        categoryCounts.put("男子", productService.getProductCountByCategory("男子"));
+        categoryCounts.put("女子", productService.getProductCountByCategory("女子"));
+        categoryCounts.put("儿童", productService.getProductCountByCategory("儿童"));
+        model.addAttribute("categoryCounts", categoryCounts);
+        
+        return "new";
+    }
+
     @GetMapping("/product/{id}")
     public String getProductDetail(@PathVariable Long id, Model model) {
         Product product = productService.getProductById(id);

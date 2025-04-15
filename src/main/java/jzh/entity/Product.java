@@ -1,6 +1,8 @@
 package jzh.entity;
 
 import lombok.Data;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 public class Product {
@@ -8,7 +10,10 @@ public class Product {
     private String name;
     private String description;
     private String imageUrl;
-    private Double price;
+    private BigDecimal price;
     private String category; // 分类：新品、男子、女子、儿童
     private Boolean recommended; // 是否推荐
+    private Integer stock; // 库存数量
+    private LocalDateTime createTime;
+    private LocalDateTime updateTime;
 } 

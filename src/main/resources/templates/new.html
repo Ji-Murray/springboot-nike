@@ -13,8 +13,10 @@
 <body>
 <div class="head">
     <div class="left">
-        <img src="/img/屏幕截图%202025-04-06%20165050.png" alt="">
-        <img src="/img/屏幕截图%202025-04-06%20165121.png" alt="">
+        <a href="/shouye">
+            <img src="/img/屏幕截图%202025-04-06%20165050.png" alt="">
+            <img src="/img/屏幕截图%202025-04-06%20165121.png" alt="">
+        </a>
     </div>
 
     <div class="right">
@@ -50,96 +52,110 @@
         </form>
     </div>
 </div>
-<div class="detail">
-    <div class="left1">
-        <div class="category-nav">
-            <h4 class="category-title">商品分类</h4>
-            <ul class="category-list">
-                <li class="category-item">
-                    <a th:href="@{/products(category='新品')}" class="category-link">
-                        <span class="category-name">新品&潮流</span>
-                        <span class="category-count" th:text="${categoryCounts['新品']}">0</span>
-                    </a>
-                </li>
-                <li class="category-item">
-                    <a th:href="@{/products(category='男子')}" class="category-link">
-                        <span class="category-name">男子</span>
-                        <span class="category-count" th:text="${categoryCounts['男子']}">0</span>
-                    </a>
-                </li>
-                <li class="category-item">
-                    <a th:href="@{/products(category='女子')}" class="category-link">
-                        <span class="category-name">女子</span>
-                        <span class="category-count" th:text="${categoryCounts['女子']}">0</span>
-                    </a>
-                </li>
-                <li class="category-item">
-                    <a th:href="@{/products(category='儿童')}" class="category-link">
-                        <span class="category-name">儿童</span>
-                        <span class="category-count" th:text="${categoryCounts['儿童']}">0</span>
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-        <div class="filter-section">
-            <h4 class="filter-title">适用人群</h4>
-            <div class="filter-options">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="male" name="gender" value="男子">
-                    <label class="form-check-label" for="male">男子</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="female" name="gender" value="女子">
-                    <label class="form-check-label" for="female">女子</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="unisex" name="gender" value="通用">
-                    <label class="form-check-label" for="unisex">通用</label>
-                </div>
+<div class="container">
+    <div class="detail">
+        <div class="left1">
+            <div class="category-nav">
+                <h4 class="category-title">商品分类</h4>
+                <ul class="category-list">
+                    <li class="category-item">
+                        <a th:href="@{/products(category='新品')}" class="category-link">
+                            <span class="category-name">新品&潮流</span>
+                            <span class="category-count" th:text="${categoryCounts['新品']}">0</span>
+                        </a>
+                    </li>
+                    <li class="category-item">
+                        <a th:href="@{/products(category='男子')}" class="category-link">
+                            <span class="category-name">男子</span>
+                            <span class="category-count" th:text="${categoryCounts['男子']}">0</span>
+                        </a>
+                    </li>
+                    <li class="category-item">
+                        <a th:href="@{/products(category='女子')}" class="category-link">
+                            <span class="category-name">女子</span>
+                            <span class="category-count" th:text="${categoryCounts['女子']}">0</span>
+                        </a>
+                    </li>
+                    <li class="category-item">
+                        <a th:href="@{/products(category='儿童')}" class="category-link">
+                            <span class="category-name">儿童</span>
+                            <span class="category-count" th:text="${categoryCounts['儿童']}">0</span>
+                        </a>
+                    </li>
+                </ul>
             </div>
-        </div>
 
-        <div class="filter-section">
-            <h4 class="filter-title">价格区间</h4>
-            <div class="filter-options">
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="price" id="price1" value="0-500">
-                    <label class="form-check-label" for="price1">¥0 - ¥500</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="price" id="price2" value="500-1000">
-                    <label class="form-check-label" for="price2">¥500 - ¥1000</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="price" id="price3" value="1000-2000">
-                    <label class="form-check-label" for="price3">¥1000 - ¥2000</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input" type="radio" name="price" id="price4" value="2000+">
-                    <label class="form-check-label" for="price4">¥2000以上</label>
-                </div>
-            </div>
-        </div>
-
-        <div class="filter-actions">
-            <button type="button" class="btn btn-primary" onclick="applyFilters()">应用筛选</button>
-            <button type="button" class="btn btn-outline-secondary" onclick="resetFilters()">重置</button>
-        </div>
-    </div>
-    <div class="right1">
-        <div class="row">
-            <div th:each="product : ${products}" class="col-sm-4 mb-4">
-                <a th:href="@{/product/{id}(id=${product.id})}" class="block">
-                <div class="card mycard" style="width: 300px;height: 350px" >
-                    <img th:src="${product.imageUrl}" class="card-img-top " style="height: 200px"   th:alt="${product.name}">
-                    <div class="card-body">
-                        <h5 class="card-title" th:text="${product.name}"></h5>
-                        <p class="card-text" th:text="${product.description}"></p>
-                        <p class="card-text text-danger" th:text="'¥' + ${product.price}"></p>
+            <div class="filter-section">
+                <h4 class="filter-title">适用人群</h4>
+                <div class="filter-options">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="male" name="gender" value="男子">
+                        <label class="form-check-label" for="male">男子</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="female" name="gender" value="女子">
+                        <label class="form-check-label" for="female">女子</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="unisex" name="gender" value="通用">
+                        <label class="form-check-label" for="unisex">通用</label>
                     </div>
                 </div>
-                </a>
+            </div>
+
+            <div class="filter-section">
+                <h4 class="filter-title">价格区间</h4>
+                <div class="filter-options">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="price" id="price1" value="0-500">
+                        <label class="form-check-label" for="price1">¥0 - ¥500</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="price" id="price2" value="500-1000">
+                        <label class="form-check-label" for="price2">¥500 - ¥1000</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="price" id="price3" value="1000-2000">
+                        <label class="form-check-label" for="price3">¥1000 - ¥2000</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="price" id="price4" value="2000+">
+                        <label class="form-check-label" for="price4">¥2000以上</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-actions">
+                <button type="button" class="btn btn-primary" onclick="applyFilters()">应用筛选</button>
+                <button type="button" class="btn btn-outline-secondary" onclick="resetFilters()">重置</button>
+            </div>
+        </div>
+        <div class="right1">
+            <!-- 搜索结果显示 -->
+            <div th:if="${keyword != null}" class="search-results mb-4">
+                <h3>搜索结果：<span th:text="${keyword}"></span></h3>
+                <p class="text-muted">找到 <span th:text="${products.size()}"></span> 个商品</p>
+            </div>
+
+            <div class="row">
+                <div th:each="product : ${products}" class="col-sm-4 mb-4">
+                    <a th:href="@{/product/{id}(id=${product.id})}" class="block">
+                        <div class="card mycard" style="width: 300px;height: 350px">
+                            <img th:src="${product.imageUrl}" class="card-img-top" style="height: 200px" th:alt="${product.name}">
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${product.name}"></h5>
+                                <p class="card-text" th:text="${product.description}"></p>
+                                <p class="card-text text-danger" th:text="'¥' + ${product.price}"></p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 无搜索结果提示 -->
+            <div th:if="${keyword != null and products.empty}" class="text-center my-5">
+                <h4>未找到相关商品</h4>
+                <p class="text-muted">请尝试其他关键词</p>
             </div>
         </div>
     </div>

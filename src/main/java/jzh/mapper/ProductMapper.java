@@ -14,6 +14,9 @@ public interface ProductMapper {
     @Select("SELECT * FROM product WHERE category = #{category}")
     List<Product> findByCategory(String category);
     
+    @Select("SELECT * FROM product WHERE name LIKE CONCAT('%', #{keyword}, '%') OR description LIKE CONCAT('%', #{keyword}, '%')")
+    List<Product> searchProducts(String keyword);
+    
     @Select("SELECT * FROM product WHERE recommended = TRUE")
     List<Product> findRecommended();
     
@@ -47,11 +50,17 @@ public interface ProductMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Product product);
     
-    @Update("UPDATE product SET name = #{name}, description = #{description}, " +
-            "image_url = #{imageUrl}, price = #{price}, category = #{category}, " +
-            "recommended = #{recommended} WHERE id = #{id}")
+    @Update("UPDATE product SET name = #{name}, description = #{description}, price = #{price}, stock = #{stock}, category = #{category}, image_url = #{imageUrl} WHERE id = #{id}")
     int update(Product product);
     
     @Delete("DELETE FROM product WHERE id = #{id}")
     int deleteById(Long id);
+
+    @Select("SELECT p.*, COUNT(o.id) as order_count " +
+            "FROM product p " +
+            "LEFT JOIN `order` o ON p.id = o.product_id " +
+            "GROUP BY p.id " +
+            "ORDER BY order_count DESC " +
+            "LIMIT #{limit}")
+    List<Product> findHotProducts(int limit);
 } 

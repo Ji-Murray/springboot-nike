@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class HomeController {
 
 
-    @GetMapping("/orderlist")
+    @GetMapping("/chart")
     public String index() {
         System.out.println("hello.springboot的第一个controller");
-        return "orderlist";
+        return "cart";
     }
 
 

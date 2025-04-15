@@ -5,6 +5,7 @@ import jzh.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.time.LocalDateTime;
 
 @Service
 public class ProductService {
@@ -41,10 +42,28 @@ public class ProductService {
     }
     
     public int updateProduct(Product product) {
+        product.setUpdateTime(LocalDateTime.now());
         return productMapper.update(product);
     }
     
-    public int deleteProduct(Long id) {
+    public List<Product> searchProducts(String keyword) {
+        return productMapper.searchProducts(keyword);
+    }
+    
+    public List<Product> getHotProducts(int limit) {
+        return productMapper.findHotProducts(limit);
+    }
+    
+    public Product findById(Long id) {
+        return productMapper.findById(id);
+    }
+    
+    public int update(Product product) {
+        product.setUpdateTime(LocalDateTime.now());
+        return productMapper.update(product);
+    }
+    
+    public int deleteById(Long id) {
         return productMapper.deleteById(id);
     }
 } 
