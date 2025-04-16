@@ -45,12 +45,14 @@ public interface ProductMapper {
             "</script>")
     List<Product> findFilteredProducts(@Param("genders") String[] genders, @Param("price") String price);
     
-    @Insert("INSERT INTO product (name, description, image_url, price, category, recommended) " +
-            "VALUES (#{name}, #{description}, #{imageUrl}, #{price}, #{category}, #{recommended})")
+    @Insert("INSERT INTO product (name, description, price, stock, category, image_url, created_at, updated_at) " +
+            "VALUES (#{name}, #{description}, #{price}, #{stock}, #{category}, #{imageUrl}, #{createdAt}, #{updatedAt})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Product product);
     
-    @Update("UPDATE product SET name = #{name}, description = #{description}, price = #{price}, stock = #{stock}, category = #{category}, image_url = #{imageUrl} WHERE id = #{id}")
+    @Update("UPDATE product SET name = #{name}, description = #{description}, price = #{price}, " +
+            "stock = #{stock}, category = #{category}, image_url = #{imageUrl}, updated_at = #{updatedAt} " +
+            "WHERE id = #{id}")
     int update(Product product);
     
     @Delete("DELETE FROM product WHERE id = #{id}")

@@ -1,27 +1,38 @@
 package jzh.Controller;
 
 import jzh.Service.CartService;
-import jzh.entity.CartItem;
 import jzh.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import jakarta.servlet.http.HttpSession;
-import java.util.List;
+import java.math.BigDecimal;
 
 @Controller
+@RequestMapping("/cart")
 public class CartController {
 
     @Autowired
     private CartService cartService;
 
-    @GetMapping ("/cart/add")
+    @GetMapping
+    public String viewCart(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        model.addAttribute("cartItems", cartService.getCartItems(user.getId()));
+        model.addAttribute("total", calculateTotal(user.getId()));
+        return "cart";
+    }
+
+    @PostMapping("/add")
     @ResponseBody
     public String addToCart(@RequestParam Long productId,
                           @RequestParam String size,
-                          @RequestParam(defaultValue = "1") Integer quantity,
+                          @RequestParam Integer quantity,
                           HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
@@ -30,35 +41,13 @@ public class CartController {
         return cartService.addToCart(user.getId(), productId, size, quantity);
     }
 
-    @GetMapping("/cart")
-    public String viewCart(Model model, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "redirect:/login";
-        }
-        List<CartItem> cartItems = cartService.getCartItems(user.getId());
-        model.addAttribute("cartItems", cartItems);
-        
-        // 计算总价
-        double total = cartItems.stream()
-                .mapToDouble(item -> item.getPrice() * item.getQuantity())
-                .sum();
-        model.addAttribute("total", total);
-        
-        return "cart";
-    }
-
-    @GetMapping("/cart/remove/{id}")
+    @PostMapping("/remove")
     @ResponseBody
-    public String removeFromCart(@PathVariable Long id, HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            return "请先登录";
-        }
-        return cartService.removeFromCart(id);
+    public String removeFromCart(@RequestParam Long cartItemId) {
+        return cartService.removeFromCart(cartItemId);
     }
 
-    @GetMapping("/cart/clear")
+    @PostMapping("/clear")
     @ResponseBody
     public String clearCart(HttpSession session) {
         User user = (User) session.getAttribute("user");
@@ -67,4 +56,10 @@ public class CartController {
         }
         return cartService.clearCart(user.getId());
     }
-} 
+
+    private BigDecimal calculateTotal(Long userId) {
+        return cartService.getCartItems(userId).stream()
+                .map(item -> item.getPrice().multiply(new BigDecimal(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+}

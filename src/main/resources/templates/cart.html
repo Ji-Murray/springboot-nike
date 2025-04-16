@@ -127,8 +127,9 @@ $(document).ready(function() {
     $('.remove-item').click(function() {
         const itemId = $(this).data('id');
         $.ajax({
-            url: '/cart/remove/' + itemId,
-            type: 'GET',
+            url: '/cart/remove',
+            type: 'POST',
+            data: { cartItemId: itemId },
             success: function(response) {
                 alert(response);
                 location.reload();
@@ -144,7 +145,7 @@ $(document).ready(function() {
         if (confirm('确定要清空购物车吗？')) {
             $.ajax({
                 url: '/cart/clear',
-                type: 'GET',
+                type: 'POST',
                 success: function(response) {
                     alert(response);
                     location.reload();
@@ -160,32 +161,7 @@ $(document).ready(function() {
 
 <hr style="border: solid #ccc; margin: 20px 0;">
 <div class="bottom">
-  <div class="a1">
-    <div class="aa1">
-      <h4 style="margin-left: 1em">获取礼品卡</h4>
-      <ul>
-        <li><a href="#">关于我们</a></li>
-        <li><a href="#">关于我们</a></li>
-        <li><a href="#">关于我们</a></li>
-      </ul>
-    </div>
-    <div class="aa1">
-      <h4 style="margin-left: 1em">获取帮助</h4>
-      <ul>
-        <li><a href="#">关于我们</a></li>
-        <li><a href="#">关于我们</a></li>
-        <li><a href="#">关于我们</a></li>
-      </ul>
-    </div>
-    <div class="aa1">
-      <h4 style="margin-left: 1em">关于我们</h4>
-      <ul>
-        <li><a href="#">加入我们</a></li>
-        <li><a href="#">关于我们</a></li>
-        <li><a href="#">关于我们</a></li>
-      </ul>
-    </div>
-  </div>
+
   <div class="a2">
     <p><small>
       @纪子涵2025 Allright.reserve
@@ -199,6 +175,12 @@ $(document).ready(function() {
 
 </div>
 
+<form th:action="@{/cart/add}" method="post">
+    <input type="hidden" name="productId" th:value="${product.id}">
+    <input type="hidden" name="size" th:value="${size}">
+    <input type="hidden" name="quantity" th:value="${quantity}">
+    <button type="submit" class="btn btn-primary">加入购物车</button>
+</form>
 
 </body>
 </html>

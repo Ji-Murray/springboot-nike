@@ -12,7 +12,6 @@ public class Product {
     private String imageUrl;
     private BigDecimal price;
     private String category; // 分类：新品、男子、女子、儿童
-    private Boolean recommended; // 是否推荐
     private Integer stock; // 库存数量
     private LocalDateTime createTime;
     private LocalDateTime updateTime;

@@ -2,18 +2,31 @@ package jzh.mapper;
 
 import jzh.entity.CartItem;
 import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.mapping.FetchType;
 
 import java.util.List;
 
 @Mapper
 public interface CartMapper {
     
-    @Insert("INSERT INTO cart_item (user_id, product_id, size, quantity, price) " +
-            "VALUES (#{userId}, #{productId}, #{size}, #{quantity}, #{price})")
+    @Insert("INSERT INTO cart_item (user_id, product_id, size, quantity, price, created_at, updated_at) " +
+            "VALUES (#{userId}, #{productId}, #{size}, #{quantity}, #{price}, #{createdAt}, #{updatedAt})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(CartItem cartItem);
     
     @Select("SELECT * FROM cart_item WHERE user_id = #{userId}")
+    @Results({
+        @Result(property = "id", column = "id"),
+        @Result(property = "userId", column = "user_id"),
+        @Result(property = "productId", column = "product_id"),
+        @Result(property = "size", column = "size"),
+        @Result(property = "quantity", column = "quantity"),
+        @Result(property = "price", column = "price"),
+        @Result(property = "createdAt", column = "created_at"),
+        @Result(property = "updatedAt", column = "updated_at"),
+        @Result(property = "product", column = "product_id", 
+                one = @One(select = "jzh.mapper.ProductMapper.findById", fetchType = FetchType.EAGER))
+    })
     List<CartItem> findByUserId(Long userId);
     
     @Select("SELECT * FROM cart_item WHERE user_id = #{userId} AND product_id = #{productId} AND size = #{size}")
@@ -21,12 +34,13 @@ public interface CartMapper {
                                            @Param("productId") Long productId,
                                            @Param("size") String size);
     
-    @Update("UPDATE cart_item SET quantity = quantity + #{quantity} " +
+    @Update("UPDATE cart_item SET quantity = quantity + #{quantity}, updated_at = #{updatedAt} " +
             "WHERE user_id = #{userId} AND product_id = #{productId} AND size = #{size}")
     int updateQuantity(@Param("userId") Long userId,
                       @Param("productId") Long productId,
                       @Param("size") String size,
-                      @Param("quantity") Integer quantity);
+                      @Param("quantity") Integer quantity,
+                      @Param("updatedAt") String updatedAt);
     
     @Delete("DELETE FROM cart_item WHERE id = #{id}")
     int deleteById(Long id);

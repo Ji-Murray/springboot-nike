@@ -37,13 +37,34 @@ public class ProductService {
         return productMapper.findFilteredProducts(genders, price);
     }
     
-    public int addProduct(Product product) {
-        return productMapper.insert(product);
+    public boolean addProduct(Product product) {
+        try {
+            product.setCreateTime(LocalDateTime.now());
+            product.setUpdateTime(LocalDateTime.now());
+            return productMapper.insert(product) > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
     
-    public int updateProduct(Product product) {
-        product.setUpdateTime(LocalDateTime.now());
-        return productMapper.update(product);
+    public boolean updateProduct(Product product) {
+        try {
+            product.setUpdateTime(LocalDateTime.now());
+            return productMapper.update(product) > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public boolean deleteProduct(Long id) {
+        try {
+            return productMapper.deleteById(id) > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
     
     public List<Product> searchProducts(String keyword) {
@@ -58,12 +79,22 @@ public class ProductService {
         return productMapper.findById(id);
     }
     
-    public int update(Product product) {
-        product.setUpdateTime(LocalDateTime.now());
-        return productMapper.update(product);
+    public boolean update(Product product) {
+        try {
+            product.setUpdateTime(LocalDateTime.now());
+            return productMapper.update(product) > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
     
-    public int deleteById(Long id) {
-        return productMapper.deleteById(id);
+    public boolean deleteById(Long id) {
+        try {
+            return productMapper.deleteById(id) > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 } 

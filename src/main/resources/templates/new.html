@@ -1,230 +1,167 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>商品展示</title>
+    <link rel="stylesheet" href="/css/head.css">
+    <link rel="stylesheet" href="/css/middle.css">
+    <link rel="stylesheet" href="/css/command.css">
+    <link rel="stylesheet" href="/css/bottom.css">
+    <link rel="stylesheet" href="/css/iconfont/iconfont.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/css/head.css}">
-    <link rel="stylesheet" th:href="@{/css/detail.css(v=1.0)}">
-    <link rel="stylesheet" th:href="@{/css/bottom.css}">
-    <link rel="stylesheet" th:href="@{/css/command.css}">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <title>新品上架 - 球衣商城</title>
+    <style>
+        .product-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .filter-section {
+            width: 250px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            height: fit-content;
+        }
+        .product-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .product-card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: #333;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+        .product-card img {
+            height: 200px;
+            object-fit: cover;
+        }
+        .product-card .card-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+        }
+        .product-card .card-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        .product-card .card-text {
+            flex: 1;
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .product-card .price {
+            color: #dc3545;
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-<div class="head">
-    <div class="left">
-        <a href="/shouye">
-            <img src="/img/屏幕截图%202025-04-06%20165050.png" alt="">
-            <img src="/img/屏幕截图%202025-04-06%20165121.png" alt="">
-        </a>
-    </div>
-
-    <div class="right">
-        <nav style="--bs-breadcrumb-divider: '｜';" aria-label="breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a style="color: #111111" href="#">关于我们</a></li>
-                <li class="breadcrumb-item"><a style="color: #111111" href="#">定制</a></li>
-                <li class="breadcrumb-item" id="userSection">
-                    <span th:if="${session.user != null}">
-                        欢迎，<span th:text="${session.user.username}"></span>
-                        <a href="/logout" style="color: #111111; margin-left: 10px;">退出</a>
-                    </span>
-                    <a th:unless="${session.user != null}" href="/login" style="color: #111111;">登录</a>
-                </li>
-            </ol>
-        </nav>
-    </div>
-</div>
-<div class="head2">
-    <div class="head-left">
-        <img src="img/img.png" alt="">
-    </div>
-    <div class="head-middle">
-        <a th:href="@{/products(category='新品')}">新品&潮流</a>
-        <a th:href="@{/products(category='男子')}">男子</a>
-        <a th:href="@{/products(category='女子')}">女子</a>
-        <a th:href="@{/products(category='儿童')}">儿童</a>
-    </div>
-    <div class="head-right">
-        <form class="d-flex" role="search">
-            <input class="form-control me-2" type="search" placeholder="搜索球衣" aria-label="Search">
-            <button class="btn btn-light" type="submit">搜索</button>
-        </form>
-    </div>
-</div>
-<div class="container">
-    <div class="detail">
-        <div class="left1">
-            <div class="category-nav">
-                <h4 class="category-title">商品分类</h4>
-                <ul class="category-list">
-                    <li class="category-item">
-                        <a th:href="@{/products(category='新品')}" class="category-link">
-                            <span class="category-name">新品&潮流</span>
-                            <span class="category-count" th:text="${categoryCounts['新品']}">0</span>
-                        </a>
-                    </li>
-                    <li class="category-item">
-                        <a th:href="@{/products(category='男子')}" class="category-link">
-                            <span class="category-name">男子</span>
-                            <span class="category-count" th:text="${categoryCounts['男子']}">0</span>
-                        </a>
-                    </li>
-                    <li class="category-item">
-                        <a th:href="@{/products(category='女子')}" class="category-link">
-                            <span class="category-name">女子</span>
-                            <span class="category-count" th:text="${categoryCounts['女子']}">0</span>
-                        </a>
-                    </li>
-                    <li class="category-item">
-                        <a th:href="@{/products(category='儿童')}" class="category-link">
-                            <span class="category-name">儿童</span>
-                            <span class="category-count" th:text="${categoryCounts['儿童']}">0</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="filter-section">
-                <h4 class="filter-title">适用人群</h4>
-                <div class="filter-options">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="male" name="gender" value="男子">
-                        <label class="form-check-label" for="male">男子</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="female" name="gender" value="女子">
-                        <label class="form-check-label" for="female">女子</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="unisex" name="gender" value="通用">
-                        <label class="form-check-label" for="unisex">通用</label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="filter-section">
-                <h4 class="filter-title">价格区间</h4>
-                <div class="filter-options">
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="price" id="price1" value="0-500">
-                        <label class="form-check-label" for="price1">¥0 - ¥500</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="price" id="price2" value="500-1000">
-                        <label class="form-check-label" for="price2">¥500 - ¥1000</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="price" id="price3" value="1000-2000">
-                        <label class="form-check-label" for="price3">¥1000 - ¥2000</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="price" id="price4" value="2000+">
-                        <label class="form-check-label" for="price4">¥2000以上</label>
-                    </div>
-                </div>
-            </div>
-
-            <div class="filter-actions">
-                <button type="button" class="btn btn-primary" onclick="applyFilters()">应用筛选</button>
-                <button type="button" class="btn btn-outline-secondary" onclick="resetFilters()">重置</button>
-            </div>
+    <div class="head">
+        <div class="left" style="display: flex ">
+            <a href="/shouye" style="color: inherit; text-decoration: none;">
+                <div class="iconfont icon-courtborough" style="margin-left: 10px"></div>
+            </a>
         </div>
-        <div class="right1">
-            <!-- 搜索结果显示 -->
-            <div th:if="${keyword != null}" class="search-results mb-4">
-                <h3>搜索结果：<span th:text="${keyword}"></span></h3>
-                <p class="text-muted">找到 <span th:text="${products.size()}"></span> 个商品</p>
-            </div>
 
-            <div class="row">
-                <div th:each="product : ${products}" class="col-sm-4 mb-4">
-                    <a th:href="@{/product/{id}(id=${product.id})}" class="block">
-                        <div class="card mycard" style="width: 300px;height: 350px">
-                            <img th:src="${product.imageUrl}" class="card-img-top" style="height: 200px" th:alt="${product.name}">
-                            <div class="card-body">
-                                <h5 class="card-title" th:text="${product.name}"></h5>
-                                <p class="card-text" th:text="${product.description}"></p>
-                                <p class="card-text text-danger" th:text="'¥' + ${product.price}"></p>
-                            </div>
-                        </div>
+        <div class="right">
+            <nav style="--bs-breadcrumb-divider: '｜';" aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a style="color: #111111" href="/about">关于我们</a></li>
+                    <li class="breadcrumb-item"><a style="color: #111111" href="/orderlist">我的订单</a></li>
+                    <li class="breadcrumb-item" id="userSection">
+                        <span th:if="${session.user != null}">
+                            欢迎，<span th:text="${session.user.username}"></span>
+                            <a href="/logout" style="color: #111111; margin-left: 10px;">退出</a>
+                        </span>
+                        <a th:unless="${session.user != null}" href="/login" style="color: #111111;">登录</a>
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+    <div class="head2">
+        <div class="head-left">
+            <img src="/img/img.png" alt="">
+        </div>
+        <div class="head-middle">
+            <a th:href="@{/products(category='新品')}">新品&潮流</a>
+            <a th:href="@{/products(category='男子')}">男子</a>
+            <a th:href="@{/products(category='女子')}">女子</a>
+            <a th:href="@{/products(category='儿童')}">儿童</a>
+        </div>
+        <div class="head-right">
+            <form class="d-flex" role="search" th:action="@{/search}" method="get">
+                <input class="form-control me-2" type="search" name="keyword" placeholder="搜索球衣" aria-label="Search">
+                <button class="btn btn-light text-nowrap" type="submit" style="">搜索</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="product-container">
+            <!-- 筛选区域 -->
+            <div class="filter-section">
+                <h4 class="mb-3">商品分类</h4>
+                <div class="list-group">
+                    <a th:href="@{/products(category='新品')}" class="list-group-item list-group-item-action" th:classappend="${category == '新品'} ? 'active'">
+                        新品&潮流
+                    </a>
+                    <a th:href="@{/products(category='男子')}" class="list-group-item list-group-item-action" th:classappend="${category == '男子'} ? 'active'">
+                        男子
+                    </a>
+                    <a th:href="@{/products(category='女子')}" class="list-group-item list-group-item-action" th:classappend="${category == '女子'} ? 'active'">
+                        女子
+                    </a>
+                    <a th:href="@{/products(category='儿童')}" class="list-group-item list-group-item-action" th:classappend="${category == '儿童'} ? 'active'">
+                        儿童
                     </a>
                 </div>
+
+                <h4 class="mt-4 mb-3">价格区间</h4>
+                <div class="list-group">
+                    <a href="?price=0-500" class="list-group-item list-group-item-action">¥0 - ¥500</a>
+                    <a href="?price=500-1000" class="list-group-item list-group-item-action">¥500 - ¥1000</a>
+                    <a href="?price=1000-2000" class="list-group-item list-group-item-action">¥1000 - ¥2000</a>
+                    <a href="?price=2000+" class="list-group-item list-group-item-action">¥2000以上</a>
+                </div>
             </div>
 
-            <!-- 无搜索结果提示 -->
-            <div th:if="${keyword != null and products.empty}" class="text-center my-5">
-                <h4>未找到相关商品</h4>
-                <p class="text-muted">请尝试其他关键词</p>
+            <!-- 商品展示区域 -->
+            <div class="product-grid">
+                <a th:each="product : ${products}" th:href="@{/product/{id}(id=${product.id})}" class="card product-card">
+                    <img th:src="${product.imageUrl}" class="card-img-top" th:alt="${product.name}">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${product.name}"></h5>
+                        <p class="card-text" th:text="${product.description}"></p>
+                        <p class="price" th:text="'¥' + ${product.price}"></p>
+                    </div>
+                </a>
             </div>
         </div>
     </div>
-</div>
 
-<hr style="border: solid #f31111; margin: 20px 0;">
-
-<div class="bottom">
-    <div class="a1">
-        <div class="aa1">
-            <h4 style="margin-left: 1em">获取礼品卡</h4>
-            <ul>
-                <li><a href="#">关于我们</a></li>
-                <li><a href="#">关于我们</a></li>
-                <li><a href="#">关于我们</a></li>
-            </ul>
-        </div>
-        <div class="aa1">
-            <h4 style="margin-left: 1em">获取帮助</h4>
-            <ul>
-                <li><a href="#">关于我们</a></li>
-                <li><a href="#">关于我们</a></li>
-                <li><a href="#">关于我们</a></li>
-            </ul>
-        </div>
-        <div class="aa1">
-            <h4 style="margin-left: 1em">关于我们</h4>
-            <ul>
-                <li><a href="#">加入我们</a></li>
-                <li><a href="#">关于我们</a></li>
-                <li><a href="#">关于我们</a></li>
-            </ul>
+    <hr style="border: solid #ccc; margin: 20px 0;">
+    <div class="bottom">
+        <div class="a2">
+            <p><small>@纪子涵2025 Allright.reserve</small></p>
+            <p>地址：哈尔滨理工大学西区七公寓</p>
         </div>
     </div>
-    <div class="a2">
-        <p><small>
-            @纪子涵2025 Allright.reserve
-        </small>
-        </p>
-        <p>
-            地址：哈尔滨理工大学西区七公寓
-        </p>
-
-    </div>
-
-</div>
-
-<script>
-function applyFilters() {
-    const selectedGenders = Array.from(document.querySelectorAll('input[name="gender"]:checked'))
-        .map(checkbox => checkbox.value);
-    const selectedPrice = document.querySelector('input[name="price"]:checked')?.value;
-    
-    let url = '/products?';
-    if (selectedGenders.length > 0) {
-        url += 'genders=' + selectedGenders.join(',') + '&';
-    }
-    if (selectedPrice) {
-        url += 'price=' + selectedPrice;
-    }
-    
-    window.location.href = url;
-}
-
-function resetFilters() {
-    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => checkbox.checked = false);
-    document.querySelectorAll('input[type="radio"]').forEach(radio => radio.checked = false);
-    window.location.href = '/new';
-}
-</script>
 </body>
 </html>

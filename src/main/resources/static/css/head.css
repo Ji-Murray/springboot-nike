@@ -23,16 +23,17 @@
 }
 .head2{
     display: flex;
-    justify-content: center;
     margin-top: 5px;
+    justify-content: center;
     align-items: center;
     height: 60px;
+    width: 100%;
 }
 
 .head2 img{
     margin-left: 5px;
-    width: 52px;
-    height: 20px;
+    width: 70px;
+    height: 60px;
 }
 .head-left{
     position: fixed;
@@ -41,6 +42,7 @@
     width: 200px;
 }
 .head-middle{
+    justify-content: center;
 
     text-align: center;
 }

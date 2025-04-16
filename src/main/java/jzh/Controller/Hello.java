@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class Hello {
 
-    @GetMapping("/hello")
+    @GetMapping("/about")
     public String index1() {
         System.out.println("hello.springboot的第一个controller");
-        return "detail";
+        return "about";
     }
 
 }

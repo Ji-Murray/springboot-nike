@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -32,7 +34,8 @@ public class CartService {
         
         if (existingItem != null) {
             // 如果已存在，更新数量
-            cartMapper.updateQuantity(userId, productId, size, quantity);
+            String updatedAt = new Date().toString();
+            cartMapper.updateQuantity(userId, productId, size, quantity, updatedAt);
             return "已更新购物车";
         } else {
             // 如果不存在，创建新的购物车项
@@ -43,6 +46,8 @@ public class CartService {
             cartItem.setQuantity(quantity);
             cartItem.setPrice(product.getPrice());
             cartItem.setProduct(product); // 设置商品信息
+            cartItem.setCreatedAt(new Date().toString());
+            cartItem.setUpdatedAt(new Date().toString());
             
             cartMapper.insert(cartItem);
             return "已添加到购物车";
@@ -54,7 +59,9 @@ public class CartService {
         // 为每个购物车项设置商品信息
         for (CartItem item : cartItems) {
             Product product = productMapper.findById(item.getProductId());
-            item.setProduct(product);
+            if (product != null) {
+                item.setProduct(product);
+            }
         }
         return cartItems;
     }
