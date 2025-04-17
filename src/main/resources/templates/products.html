@@ -1,0 +1,32 @@
+<button class="btn btn-dark add-to-cart" 
+        th:data-product-id="${product.id}"
+        th:data-size="M"
+        th:data-quantity="1">
+    加入购物车
+</button>
+
+<script>
+$(document).ready(function() {
+    $('.add-to-cart').click(function() {
+        const productId = $(this).data('product-id');
+        const size = $(this).data('size');
+        const quantity = $(this).data('quantity');
+        
+        $.ajax({
+            url: '/cart/add',
+            type: 'POST',
+            data: {
+                productId: productId,
+                size: size,
+                quantity: quantity
+            },
+            success: function(response) {
+                alert(response);
+            },
+            error: function(xhr) {
+                alert('添加失败: ' + xhr.responseText);
+            }
+        });
+    });
+});
+</script> 

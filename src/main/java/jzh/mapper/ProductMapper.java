@@ -5,6 +5,7 @@ import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
+
 @Mapper
 public interface ProductMapper {
 
@@ -34,24 +35,24 @@ public interface ProductMapper {
             "#{gender}" +
             "</foreach>" +
             "</if>" +
-            "<if test='price != null'>" +
+            "<if test='price != null and price != \"\"'>" +
             "<choose>" +
             "<when test='price == \"0-500\"'>AND price BETWEEN 0 AND 500</when>" +
             "<when test='price == \"500-1000\"'>AND price BETWEEN 500 AND 1000</when>" +
             "<when test='price == \"1000-2000\"'>AND price BETWEEN 1000 AND 2000</when>" +
-            "<when test='price == \"2000+\"'>AND price > 2000</when>" +
+            "<when test='price == \"2000+\"'>AND price >= 2001</when>" +
             "</choose>" +
             "</if>" +
             "</script>")
     List<Product> findFilteredProducts(@Param("genders") String[] genders, @Param("price") String price);
     
-    @Insert("INSERT INTO product (name, description, price, stock, category, image_url, created_at, updated_at) " +
-            "VALUES (#{name}, #{description}, #{price}, #{stock}, #{category}, #{imageUrl}, #{createdAt}, #{updatedAt})")
+    @Insert("INSERT INTO product (name, description, price, stock, category, image_url, create_time, update_time) " +
+            "VALUES (#{name}, #{description}, #{price}, #{stock}, #{category}, #{imageUrl}, #{createTime}, #{updateTime})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(Product product);
     
     @Update("UPDATE product SET name = #{name}, description = #{description}, price = #{price}, " +
-            "stock = #{stock}, category = #{category}, image_url = #{imageUrl}, updated_at = #{updatedAt} " +
+            "stock = #{stock}, category = #{category}, image_url = #{imageUrl}, update_time = #{updateTime} " +
             "WHERE id = #{id}")
     int update(Product product);
     
@@ -65,4 +66,13 @@ public interface ProductMapper {
             "ORDER BY order_count DESC " +
             "LIMIT #{limit}")
     List<Product> findHotProducts(int limit);
+
+    @Select("SELECT * FROM products WHERE recommended = #{recommended}")
+    List<Product> findByRecommended(boolean recommended);
+
+    @Select("SELECT * FROM product WHERE recommended = true")
+    List<Product> findRecommendedProducts();
+
+    @Update("UPDATE product SET recommended = #{recommended} WHERE id = #{id}")
+    void updateRecommended(@Param("id") Long id, @Param("recommended") Boolean recommended);
 } 

@@ -218,6 +218,12 @@
                                                     th:onclick="'editProduct(' + ${product.id} + ')'">
                                                 <i class="bi bi-pencil"></i> 编辑
                                             </button>
+                                            <button class="btn btn-outline-success btn-sm" 
+                                                    th:onclick="'toggleRecommend(' + ${product.id} + ')'"
+                                                    th:classappend="${product.recommended} ? 'btn-success' : 'btn-outline-success'">
+                                                <i class="bi bi-star"></i> 
+                                                <span th:text="${product.recommended} ? '取消推荐' : '设为推荐'"></span>
+                                            </button>
                                             <button class="btn btn-outline-danger btn-sm" 
                                                     th:onclick="'deleteProduct(' + ${product.id} + ')'">
                                                 <i class="bi bi-trash"></i> 删除
@@ -344,17 +350,18 @@
             const form = document.getElementById('addProductForm');
             const formData = new FormData(form);
             
-            fetch('/admin/products', {
+            fetch('/admin/products/add', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
+            .then(response => {
+                if (response.ok) {
                     alert('商品添加成功');
                     location.reload();
                 } else {
-                    alert('商品添加失败：' + data.message);
+                    return response.text().then(text => {
+                        throw new Error(text);
+                    });
                 }
             })
             .catch(error => {
@@ -394,6 +401,23 @@
                     alert('删除失败：' + error);
                 });
             }
+        }
+
+        function toggleRecommend(id) {
+            fetch('/admin/products/toggle-recommend/' + id, {
+                method: 'POST'
+            })
+            .then(response => response.text())
+            .then(response => {
+                if (response === 'success') {
+                    location.reload();
+                } else {
+                    alert('操作失败：' + response);
+                }
+            })
+            .catch(error => {
+                alert('操作失败：' + error);
+            });
         }
 
         document.getElementById('editProductForm').addEventListener('submit', function(e) {

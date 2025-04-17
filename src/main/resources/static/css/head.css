@@ -2,7 +2,7 @@
 
     width: 100%;
     height: 30px;
-    background-color: #f5f7fa;
+    background-color: #f7f6f6;
 }
 .head img{
     margin-left: 36px;
@@ -22,6 +22,7 @@
     width: 30%;
 }
 .head2{
+    padding: 10px 20px;
     display: flex;
     margin-top: 5px;
     justify-content: center;
@@ -56,10 +57,13 @@
 .head-right{
     position: fixed;
     right: 0;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 }
 .middle{
     margin: 5px 70px;
-    img{
+    :is(img) {
         height: 350px;
     }
 }

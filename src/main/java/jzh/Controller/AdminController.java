@@ -8,7 +8,11 @@ import jzh.entity.Admin;
 import jzh.entity.Order;
 import jzh.entity.Product;
 import jzh.entity.User;
+import jzh.mapper.ProductMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,10 +27,14 @@ import java.util.Map;
 import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
+    private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     @Autowired
     private AdminService adminService;
@@ -39,6 +47,14 @@ public class AdminController {
     
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ProductMapper productMapper;
+
+    @Value("${upload.path}")
+    private String uploadPath;
+
+    private final String UPLOAD_DIR = "uploads";
 
     @GetMapping("/login")
     public String loginPage() {
@@ -67,109 +83,129 @@ public class AdminController {
     }
 
     @GetMapping("/products")
-    public String products(Model model) {
-        model.addAttribute("products", productService.getAllProducts());
+    public String listProducts(Model model) {
+        List<Product> products = productMapper.findAll();
+        model.addAttribute("products", products);
         return "admin/products";
     }
 
-    @PostMapping("/products")
-    @ResponseBody
-    public Map<String, Object> addProduct(@RequestParam("name") String name,
-                                        @RequestParam("price") BigDecimal price,
-                                        @RequestParam("stock") Integer stock,
-                                        @RequestParam("category") String category,
-                                        @RequestParam(value = "description", required = false) String description,
-                                        @RequestParam("image") MultipartFile image) {
-        Map<String, Object> result = new HashMap<>();
-        try {
-            // 保存图片
-            String imageUrl = saveImage(image);
-            
-            // 创建商品对象
-            Product product = new Product();
-            product.setName(name);
-            product.setPrice(price);
-            product.setStock(stock);
-            product.setCategory(category);
-            product.setDescription(description);
-            product.setImageUrl(imageUrl);
-            product.setCreateTime(LocalDateTime.now());
-            product.setUpdateTime(LocalDateTime.now());
-            
-            if (productService.addProduct(product)) {
-                result.put("success", true);
-                result.put("message", "商品添加成功");
-            } else {
-                result.put("success", false);
-                result.put("message", "商品添加失败");
+    @PostMapping("/products/add")
+    public String addProduct(@ModelAttribute Product product, @RequestParam("image") MultipartFile file) {
+        logger.info("开始添加商品，商品名称：{}", product.getName());
+        
+        if (!file.isEmpty()) {
+            try {
+                logger.debug("开始处理文件上传，文件名：{}", file.getOriginalFilename());
+                
+                // 获取项目根目录
+                String projectRoot = System.getProperty("user.dir");
+                // 设置上传目录为 resources/static/img
+                String uploadDir = projectRoot + "/src/main/resources/static/img/";
+                File dir = new File(uploadDir);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+
+                // 生成唯一的文件名
+                String originalFilename = file.getOriginalFilename();
+                String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+                String fileName = UUID.randomUUID().toString() + extension;
+                File dest = new File(dir, fileName);
+                
+                // 保存文件
+                file.transferTo(dest);
+                
+                // 设置图片URL
+                String imageUrl = "/img/" + fileName;
+                product.setImageUrl(imageUrl);
+                
+                logger.info("文件上传成功，保存路径：{}", dest.getAbsolutePath());
+            } catch (IOException e) {
+                logger.error("文件上传失败", e);
+                return "redirect:/admin/products?error=upload_failed";
             }
-        } catch (Exception e) {
-            result.put("success", false);
-            result.put("message", "商品添加失败：" + e.getMessage());
-        }
-        return result;
-    }
-
-    private String saveImage(MultipartFile image) throws IOException {
-        if (image.isEmpty()) {
-            throw new RuntimeException("请选择图片");
         }
         
-        // 获取文件扩展名
-        String originalFilename = image.getOriginalFilename();
-        String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        
-        // 生成新的文件名
-        String newFilename = UUID.randomUUID().toString() + extension;
-        
-        // 获取项目根目录
-        String projectRoot = System.getProperty("user.dir");
-        
-        // 保存文件
-        String uploadDir = projectRoot + "/src/main/resources/static/img/";
-        File dir = new File(uploadDir);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-        
-        File file = new File(dir, newFilename);
-        image.transferTo(file);
-        
-        // 返回图片URL
-        return "/img/" + newFilename;
-    }
-
-    @GetMapping("/products/get/{id}")
-    @ResponseBody
-    public Product getProduct(@PathVariable Long id) {
-        return productService.getProductById(id);
+        productMapper.insert(product);
+        logger.info("商品添加成功，ID：{}", product.getId());
+        return "redirect:/admin/products";
     }
 
     @PostMapping("/products/update")
     @ResponseBody
-    public String updateProduct(@ModelAttribute Product product) {
-        try {
-            // 调用service层更新商品
-            boolean result = productService.updateProduct(product);
-            if (result) {
-                return "success";
-            } else {
-                return "更新失败";
-            }
-        } catch (Exception e) {
-            return "error: " + e.getMessage();
+    public String updateProduct(@RequestParam("id") Long id,
+                              @RequestParam("name") String name,
+                              @RequestParam("price") BigDecimal price,
+                              @RequestParam("stock") Integer stock,
+                              @RequestParam("category") String category,
+                              @RequestParam(value = "description", required = false) String description,
+                              @RequestParam(value = "image", required = false) MultipartFile file) {
+        
+        logger.info("开始更新商品，ID：{}", id);
+        
+        // 获取现有商品
+        Product existingProduct = productMapper.findById(id);
+        if (existingProduct == null) {
+            logger.error("商品不存在，ID：{}", id);
+            return "商品不存在";
         }
+
+        // 更新商品信息
+        existingProduct.setName(name);
+        existingProduct.setPrice(price);
+        existingProduct.setStock(stock);
+        existingProduct.setCategory(category);
+        if (description != null) {
+            existingProduct.setDescription(description);
+        }
+
+        // 处理文件上传
+        if (file != null && !file.isEmpty()) {
+            try {
+                String projectRoot = System.getProperty("user.dir");
+                String uploadDir = projectRoot + "/src/main/resources/static/img/";
+                File dir = new File(uploadDir);
+                if (!dir.exists()) {
+                    dir.mkdirs();
+                }
+
+                String originalFilename = file.getOriginalFilename();
+                String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+                String fileName = UUID.randomUUID().toString() + extension;
+                File dest = new File(dir, fileName);
+                
+                file.transferTo(dest);
+                
+                String imageUrl = "/img/" + fileName;
+                existingProduct.setImageUrl(imageUrl);
+                
+                logger.info("文件上传成功，保存路径：{}", dest.getAbsolutePath());
+            } catch (IOException e) {
+                logger.error("文件上传失败", e);
+                return "文件上传失败";
+            }
+        }
+        
+        // 更新商品
+        productMapper.update(existingProduct);
+        logger.info("商品更新成功，ID：{}", existingProduct.getId());
+        return "success";
     }
 
     @PostMapping("/products/delete/{id}")
-    @ResponseBody
     public String deleteProduct(@PathVariable Long id) {
-        try {
-            productService.deleteById(id);
-            return "success";
-        } catch (Exception e) {
-            return "error";
+        productMapper.deleteById(id);
+        return "redirect:/admin/products";
+    }
+
+    @GetMapping("/products/edit/{id}")
+    public String editProduct(@PathVariable Long id, Model model) {
+        Product product = productMapper.findById(id);
+        if (product == null) {
+            return "redirect:/admin/products?error=product_not_found";
         }
+        model.addAttribute("product", product);
+        return "admin/product_edit";
     }
 
     @GetMapping("/orders")
@@ -219,5 +255,28 @@ public class AdminController {
     @GetMapping("/logout")
     public String logout() {
         return "redirect:/admin/login";
+    }
+
+    @GetMapping("/products/get/{id}")
+    @ResponseBody
+    public Product getProduct(@PathVariable Long id) {
+        return productMapper.findById(id);
+    }
+
+    @PostMapping("/products/toggle-recommend/{id}")
+    @ResponseBody
+    public String toggleRecommend(@PathVariable Long id) {
+        try {
+            productService.toggleRecommend(id);
+            return "success";
+        } catch (Exception e) {
+            return "error: " + e.getMessage();
+        }
+    }
+
+    @GetMapping("/products/recommended")
+    @ResponseBody
+    public List<Product> getRecommendedProducts() {
+        return productService.getRecommendedProducts();
     }
 }

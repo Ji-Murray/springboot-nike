@@ -9,8 +9,8 @@ import java.util.List;
 @Mapper
 public interface CartMapper {
     
-    @Insert("INSERT INTO cart_item (user_id, product_id, size, quantity, price, created_at, updated_at) " +
-            "VALUES (#{userId}, #{productId}, #{size}, #{quantity}, #{price}, #{createdAt}, #{updatedAt})")
+    @Insert("INSERT INTO cart_item (user_id, product_id, size, quantity, price, create_time, update_time) " +
+            "VALUES (#{userId}, #{productId}, #{size}, #{quantity}, #{price}, #{createTime}, #{updateTime})")
     @Options(useGeneratedKeys = true, keyProperty = "id")
     int insert(CartItem cartItem);
     
@@ -22,8 +22,8 @@ public interface CartMapper {
         @Result(property = "size", column = "size"),
         @Result(property = "quantity", column = "quantity"),
         @Result(property = "price", column = "price"),
-        @Result(property = "createdAt", column = "created_at"),
-        @Result(property = "updatedAt", column = "updated_at"),
+        @Result(property = "createTime", column = "create_time"),
+        @Result(property = "updateTime", column = "update_time"),
         @Result(property = "product", column = "product_id", 
                 one = @One(select = "jzh.mapper.ProductMapper.findById", fetchType = FetchType.EAGER))
     })
@@ -34,13 +34,13 @@ public interface CartMapper {
                                            @Param("productId") Long productId,
                                            @Param("size") String size);
     
-    @Update("UPDATE cart_item SET quantity = quantity + #{quantity}, updated_at = #{updatedAt} " +
+    @Update("UPDATE cart_item SET quantity = quantity + #{quantity}, update_time = #{updateTime} " +
             "WHERE user_id = #{userId} AND product_id = #{productId} AND size = #{size}")
     int updateQuantity(@Param("userId") Long userId,
                       @Param("productId") Long productId,
                       @Param("size") String size,
                       @Param("quantity") Integer quantity,
-                      @Param("updatedAt") String updatedAt);
+                      @Param("updateTime") String updateTime);
     
     @Delete("DELETE FROM cart_item WHERE id = #{id}")
     int deleteById(Long id);

@@ -22,7 +22,7 @@ public class ProductService {
     }
     
     public List<Product> getRecommendedProducts() {
-        return productMapper.findRecommended();
+        return productMapper.findRecommendedProducts();
     }
     
     public Product getProductById(Long id) {
@@ -95,6 +95,13 @@ public class ProductService {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+    
+    public void toggleRecommend(Long id) {
+        Product product = productMapper.findById(id);
+        if (product != null) {
+            productMapper.updateRecommended(id, !product.isRecommended());
         }
     }
 } 
